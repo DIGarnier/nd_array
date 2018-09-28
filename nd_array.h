@@ -23,19 +23,19 @@ std::array<T, (N * ...)> array = {};
     }
 
 private:
-    template <typename... Idxs, size_t... Is>
-    constexpr size_t calculate_index(std::index_sequence<Is...>,
+    template <typename... Idxs, std::size_t... Is>
+    constexpr std::size_t calculate_index(std::index_sequence<Is...>,
                                      Idxs... idx) const {
         return ((dims[std::max((T)(Is - 1), 0)] * dims[Is] * idx) + ...);
     }
 
-    template <typename... Idxs, size_t... Is>
+    template <typename... Idxs, std::size_t... Is>
     constexpr void range_check(Idxs... idx) const {
         if (not_in_range(seq, idx...))
             throw std::out_of_range("Indices out of range");
     }
 
-    template <typename... Idxs, size_t... Is>
+    template <typename... Idxs, std::size_t... Is>
     constexpr bool not_in_range(std::index_sequence<Is...>,
                                 Idxs... idx) const {
         return ((idx >= dims[Is + 1]) || ...);
