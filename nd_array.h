@@ -4,7 +4,7 @@
 
 
 template <typename T, int... N>
-struct multi_array {
+struct nd_array {
 
 std::array<T, (N * ...)> array = {};
     std::array<T, sizeof...(N) + 1> dims{1, N...};
