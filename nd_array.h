@@ -21,16 +21,6 @@ struct nd_array : public std::array<T, (N * ...)>  {
         return nt_element(indices...);
     }
 
-    template <typename... Idxs>
-    constexpr const T& operator[](Idxs... indices) const {
-        return nt_element(indices...);
-    }
-
-    template <typename... Idxs>
-    constexpr T& operator[](Idxs... indices) {
-        return nt_element(indices...);
-    }
-
 private:
 
     
