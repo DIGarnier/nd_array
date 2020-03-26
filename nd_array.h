@@ -2,11 +2,13 @@
 
 #include <array>
 
+template<uint32_t... N>
+constexpr std::array<uint32_t, sizeof...(N)> make_coeffs();
 
-template <typename T, int... N>
+template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
 
-    std::array<T, sizeof...(N) + 1> dims{1, N...};
+    std::array<uint32_t, sizeof...(N)> coeffs = make_coeffs<N...>();
     decltype(std::make_index_sequence<sizeof...(N)>{}) seq = std::make_index_sequence<sizeof...(N)>{};
 
     template <typename... Idxs>
@@ -21,9 +23,18 @@ struct nd_array : public std::array<T, (N * ...)>  {
         return nt_element(indices...);
     }
 
+    template <typename... Idxs>
+    constexpr const T& unsafe_at(Idxs... indices) const {
+        return nt_element(indices...);
+    }
+
+    template <typename... Idxs>
+    constexpr T& unsafe_at(Idxs... indices) {
+        return nt_element(indices...);
+    }
+
 private:
 
-    
     using super = std::array<T, (N * ...)>;
 
     template <typename... Idxs>
@@ -37,21 +48,35 @@ private:
     }
 
     template <typename... Idxs, std::size_t... Is>
+    constexpr std::size_t calculate_index(std::index_sequence<Is...>,
+                                          Idxs... idx) const {
+        return ((coeffs[Is] * idx) + ...);
+    }
+
+    template <typename... Idxs, std::size_t... Is>
     constexpr void range_check(Idxs... idx) const {
-        if (not_in_range(seq, idx...))
+        static_assert(sizeof...(N) == sizeof...(idx), "Mismatch between number of indices provided and nd_array dimensions");
+        if (not_in_range(idx...))
             throw std::out_of_range("Indices out of range");
     }
 
     template <typename... Idxs, std::size_t... Is>
-    constexpr std::size_t calculate_index(std::index_sequence<Is...>,
-                                     Idxs... idx) const {
-        return ((dims[std::max((int)(Is - 1), 0)] * dims[Is] * idx) + ...);
+    constexpr bool not_in_range(Idxs... idx) const {
+        return ((idx >= N) || ...);
     }
-
-    template <typename... Idxs, std::size_t... Is>
-    constexpr bool not_in_range(std::index_sequence<Is...>,
-                                Idxs... idx) const {
-        return ((idx >= dims[Is + 1]) || ...);
-    }
-
 };
+
+
+template<uint32_t... N>
+constexpr std::array<uint32_t, sizeof...(N)> make_coeffs() {
+    constexpr auto dims = std::array{N...};
+    std::array<uint32_t, sizeof...(N)> coeffs{};
+    coeffs[0] = 1;
+
+    auto coeff = 1;
+    for(auto i = 0; i < dims.size() - 1; ++i) {
+        coeff *= dims[i];
+        coeffs[i + 1] = coeff;   
+    }
+    return coeffs;
+}
