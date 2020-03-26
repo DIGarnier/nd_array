@@ -9,7 +9,7 @@ template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
 
     std::array<uint32_t, sizeof...(N)> coeffs = make_coeffs<N...>();
-    decltype(std::make_index_sequence<sizeof...(N)>{}) seq = std::make_index_sequence<sizeof...(N)>{};
+    decltype(std::make_index_sequence<sizeof...(N)>{}) seq{};
 
     template <typename... Idxs>
     constexpr const T& at(Idxs... indices) const {
@@ -53,14 +53,14 @@ private:
         return ((coeffs[Is] * idx) + ...);
     }
 
-    template <typename... Idxs, std::size_t... Is>
+    template <typename... Idxs>
     constexpr void range_check(Idxs... idx) const {
         static_assert(sizeof...(N) == sizeof...(idx), "Mismatch between number of indices provided and nd_array dimensions");
         if (not_in_range(idx...))
             throw std::out_of_range("Indices out of range");
     }
 
-    template <typename... Idxs, std::size_t... Is>
+    template <typename... Idxs>
     constexpr bool not_in_range(Idxs... idx) const {
         return ((idx >= N) || ...);
     }
