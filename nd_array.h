@@ -3,13 +3,10 @@
 #include <array>
 
 template<uint32_t... N>
-constexpr std::array<uint32_t, sizeof...(N)> make_coeffs();
+constexpr auto make_coeffs();
 
 template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
-
-    std::array<uint32_t, sizeof...(N)> coeffs = make_coeffs<N...>();
-    decltype(std::make_index_sequence<sizeof...(N)>{}) seq{};
 
     template <typename... Idxs>
     constexpr const T& at(Idxs... indices) const {
@@ -64,11 +61,15 @@ private:
     constexpr bool not_in_range(Idxs... idx) const {
         return ((idx >= N) || ...);
     }
+
+
+    std::array<uint32_t, sizeof...(N)> const coeffs = make_coeffs<N...>();
+    decltype(std::make_index_sequence<sizeof...(N)>{}) const seq{};
 };
 
 
 template<uint32_t... N>
-constexpr std::array<uint32_t, sizeof...(N)> make_coeffs() {
+constexpr auto make_coeffs() {
     constexpr auto dims = std::array{N...};
     std::array<uint32_t, sizeof...(N)> coeffs{};
     coeffs[0] = 1;
