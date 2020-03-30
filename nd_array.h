@@ -3,7 +3,7 @@
 #include <array>
 
 template<uint32_t... N>
-constexpr auto make_coeffs();
+constexpr auto make_coeffs() noexcept;
 
 template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
@@ -21,12 +21,12 @@ struct nd_array : public std::array<T, (N * ...)>  {
     }
 
     template <typename... Idxs>
-    constexpr const T& unsafe_at(Idxs... indices) const {
+    constexpr const T& unsafe_at(Idxs... indices) const noexcept {
         return nt_element(indices...);
     }
 
     template <typename... Idxs>
-    constexpr T& unsafe_at(Idxs... indices) {
+    constexpr T& unsafe_at(Idxs... indices) noexcept {
         return nt_element(indices...);
     }
 
@@ -35,18 +35,18 @@ private:
     using super = std::array<T, (N * ...)>;
 
     template <typename... Idxs>
-    constexpr const T& nt_element(Idxs... indices) const {
+    constexpr const T& nt_element(Idxs... indices) const noexcept {
         return super::operator[](calculate_index(seq, indices...));
     }
 
     template <typename... Idxs>
-    constexpr T& nt_element(Idxs... indices) {
+    constexpr T& nt_element(Idxs... indices) noexcept {
         return super::operator[](calculate_index(seq, indices...));
     }
 
     template <typename... Idxs, std::size_t... Is>
     constexpr std::size_t calculate_index(std::index_sequence<Is...>,
-                                          Idxs... idx) const {
+                                          Idxs... idx) const noexcept {
         return ((coeffs[Is] * idx) + ...);
     }
 
@@ -69,7 +69,7 @@ private:
 
 
 template<uint32_t... N>
-constexpr auto make_coeffs() {
+constexpr auto make_coeffs() noexcept {
     constexpr auto dims = std::array{N...};
     std::array<uint32_t, sizeof...(N)> coeffs{};
     coeffs[0] = 1;
