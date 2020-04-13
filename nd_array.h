@@ -7,6 +7,8 @@ constexpr auto make_coeffs() noexcept;
 
 template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
+    std::array<uint32_t, sizeof...(N)> const coeffs = make_coeffs<N...>();
+    decltype(std::make_index_sequence<sizeof...(N)>{}) const seq{};
 
     template <typename... Idxs>
     constexpr const T& at(Idxs... indices) const {
@@ -61,10 +63,6 @@ private:
     constexpr bool not_in_range(Idxs... idx) const {
         return ((idx >= N) || ...);
     }
-
-
-    std::array<uint32_t, sizeof...(N)> const coeffs = make_coeffs<N...>();
-    decltype(std::make_index_sequence<sizeof...(N)>{}) const seq{};
 };
 
 
