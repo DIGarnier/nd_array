@@ -1,6 +1,8 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
+#include <stdexcept>
 
 template<uint32_t... N>
 constexpr auto make_coeffs() noexcept;
