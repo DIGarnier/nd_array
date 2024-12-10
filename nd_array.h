@@ -5,11 +5,11 @@
 #include <stdexcept>
 
 template<uint32_t... N>
-constexpr auto make_coeffs() noexcept;
+constexpr auto make_steps() noexcept;
 
 template <typename T, uint32_t... N>
 struct nd_array : public std::array<T, (N * ...)>  {
-    std::array<uint32_t, sizeof...(N)> const coeffs = make_coeffs<N...>();
+    std::array<uint32_t, sizeof...(N)> const steps = make_steps<N...>();
     decltype(std::make_index_sequence<sizeof...(N)>{}) const seq{};
 
     template <typename... Idxs>
@@ -51,7 +51,7 @@ private:
     template <typename... Idxs, std::size_t... Is>
     constexpr std::size_t calculate_index(std::index_sequence<Is...>,
                                           Idxs... idx) const noexcept {
-        return ((coeffs[Is] * idx) + ...);
+        return ((steps[Is] * idx) + ...);
     }
 
     template <typename... Idxs>
@@ -69,15 +69,13 @@ private:
 
 
 template<uint32_t... N>
-constexpr auto make_coeffs() noexcept {
+constexpr auto make_steps() noexcept {
     constexpr auto dims = std::array{N...};
-    std::array<uint32_t, sizeof...(N)> coeffs{};
-    coeffs[0] = 1;
-
-    auto coeff = 1;
+    std::array<uint32_t, sizeof...(N)> steps{};
+    steps[0] = 1;
     for(auto i = 0; i < dims.size() - 1; ++i) {
-        coeff *= dims[i];
-        coeffs[i + 1] = coeff;   
+        steps[i + 1] = dims[i] * steps[i];   
     }
-    return coeffs;
+    return steps;
 }
+
