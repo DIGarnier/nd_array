@@ -81,13 +81,13 @@ public:
     // Unchecked access for performance-critical code
     template <Integral... Idxs>
         requires (sizeof...(Idxs) == sizeof...(N))
-    [[nodiscard]] [[gnu::always_inline]] constexpr const_reference unsafe_at(Idxs... indices) const noexcept {
+    [[nodiscard]] constexpr const_reference unsafe_at(Idxs... indices) const noexcept {
         return nt_element(indices...);
     }
 
     template <Integral... Idxs>
         requires (sizeof...(Idxs) == sizeof...(N))
-    [[nodiscard]] [[gnu::always_inline]] constexpr reference unsafe_at(Idxs... indices) noexcept {
+    [[nodiscard]] constexpr reference unsafe_at(Idxs... indices) noexcept {
         return nt_element(indices...);
     }
 
@@ -125,18 +125,18 @@ public:
 private:
     // Core element access - hot path function
     template <Integral... Idxs>
-    [[nodiscard]] [[gnu::always_inline]] constexpr const_reference nt_element(Idxs... indices) const noexcept {
+    [[nodiscard]] constexpr const_reference nt_element(Idxs... indices) const noexcept {
         return super::operator[](calculate_index(std::index_sequence_for<Idxs...>{}, indices...));
     }
 
     template <Integral... Idxs>
-    [[nodiscard]] [[gnu::always_inline]] constexpr reference nt_element(Idxs... indices) noexcept {
+    [[nodiscard]] constexpr reference nt_element(Idxs... indices) noexcept {
         return super::operator[](calculate_index(std::index_sequence_for<Idxs...>{}, indices...));
     }
 
     // Compile-time index calculation using fold expressions
     template <Integral... Idxs, std::size_t... Is>
-    [[nodiscard]] [[gnu::always_inline]] static constexpr std::size_t calculate_index(
+    [[nodiscard]] static constexpr std::size_t calculate_index(
         std::index_sequence<Is...>, Idxs... idx) noexcept {
         return ((steps[Is] * static_cast<std::size_t>(idx)) + ...);
     }

@@ -13,7 +13,7 @@ A modern, high-performance n-dimensional array implementation using C++20/23 fea
 
 ### Performance Optimizations
 - **Static constexpr steps**: Stride calculations computed once at compile-time, zero per-instance overhead
-- **`[[gnu::always_inline]]`**: Hot path functions are always inlined for maximum performance
+- **Compiler-friendly inlining**: Small hot path functions optimized for automatic inlining
 - **`[[nodiscard]]`**: Prevents accidental value discards
 - **Zero-overhead abstraction**: Fully constexpr, no runtime cost for multidimensional indexing
 
@@ -145,7 +145,7 @@ g++ -std=c++23 -Wall -Wextra -O3 -o main main.cpp
 ### Optimizations
 1. ✅ Made `steps` array static constexpr (no per-instance storage)
 2. ✅ Removed redundant `seq` member variable
-3. ✅ Added `[[gnu::always_inline]]` to hot path functions
+3. ✅ Optimized hot path functions for automatic compiler inlining
 4. ✅ Improved `make_steps()` with `consteval` and `if constexpr`
 5. ✅ Made all helper functions static to avoid `this` pointer overhead
 6. ✅ Used `std::index_sequence_for` to generate sequences on-demand
