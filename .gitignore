@@ -1,0 +1,23 @@
+# Build artifacts
+main
+*.o
+*.obj
+*.exe
+*.out
+*.app
+
+# CMake build directories
+build/
+cmake-build-*/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Compiler-generated files
+*.d
+*.gch
+*.pch
